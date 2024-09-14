@@ -1,0 +1,3 @@
+https://www.virtualdj.com/wiki/ControllerDefinitionHIDv8
+https://www.virtualdj.com/wiki/hidimplementation
+https://www.virtualdj.com/wiki/ControllerDefinitionMIDI
