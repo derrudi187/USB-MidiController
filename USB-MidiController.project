@@ -4,19 +4,6 @@
     <File Name="README.md"/>
     <VirtualDirectory Name="source">
       <File Name="source/vusb-20121206.tar.gz"/>
-      <VirtualDirectory Name="info">
-        <File Name="source/info/vms4-1-midi-table.pdf"/>
-        <File Name="source/info/USB MIDI v2_0.pdf"/>
-        <File Name="source/info/Summary of MIDI Messages.pdf"/>
-        <File Name="source/info/midi10.pdf"/>
-        <File Name="source/info/links.txt"/>
-        <File Name="source/info/hid1_11.pdf"/>
-        <File Name="source/info/doc2503.pdf"/>
-        <File Name="source/info/DJ_Console_Mk4_ENG.pdf"/>
-        <File Name="source/info/Chapter9 USB Device Framework.pdf"/>
-        <File Name="source/info/CD74HCT573.pdf"/>
-        <File Name="source/info/CD74HC4067.pdf"/>
-      </VirtualDirectory>
     </VirtualDirectory>
     <VirtualDirectory Name="firmware">
       <File Name="firmware/usbconfig.h"/>
