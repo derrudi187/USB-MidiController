@@ -31,7 +31,7 @@ PB6 = MISO					1				0                   SPI data in
 PB7	= SCK					0				1                   SPI sck
 
 PORTC
-PC0 = Out bit0				0				1                   Matrix, latch register Out
+PC0 = Out bit0				0				1                   Matrix, latch register out
 PC1 = Out bit1				0				1                   ..
 PC2 = Out bit2				0				1                   ..
 PC3 = Out bit3				0				1                   ..

@@ -165,6 +165,12 @@ static PROGMEM const char usbDescriptorConfigurationMidi[] = {
 	0x01,													// bNumEmbMIDIJack
 	0x03													// BaAssocJackID(1)
 };
+/*
+ * Global SPI data
+ */
+#ifdef SPI_ENABLE
+uchar spiDataOut[SPI_DATA];
+#endif
 /* -----------------------------------------------------------
  * ---------- Request from Host to setup the device ----------
  * -------------------------------------------------------- */
@@ -211,8 +217,13 @@ void usbFunctionWriteOut(uchar *data, uchar len) {
 	 * byte2:	0x00
 	 * byte3:	0x7f
 	 */
+	#else
+	#ifdef SPI_ENABLE
+		writeLEDs(data, len);
+	#endif
 	#endif
 #endif
+
 	return;
 }
 /* --------------------------
@@ -243,6 +254,10 @@ int main(void) {
     short prevAdcData[ADC_CHANNEL];
     uchar adcChannel = 0;
     adcInit(prevAdcData);
+#endif
+#ifdef SPI_ENABLE
+	for(i = 0; i < SPI_DATA; i++)
+		spiDataOut[i] = 0x00;
 #endif
 
     usbSetup();             /* USB setup */
@@ -664,6 +679,50 @@ uchar adcConvert(short *prevAdcData, uchar channel) {
 void usbSendMessage(uchar *message, uchar len) {
 	if(usbInterruptIsReady()) {
 		usbSetInterrupt(message, len);
+	}
+	return;
+}
+uchar spiWriteRead(uchar data) {
+	SPDR = data;				/* SPI write */
+	while(!(SPSR & (1<<SPIF))) {
+		; /* wait SPI ready */
+	}
+	return SPDR;				/* SPI read(clear SPIF bit) */
+}
+void writeLEDs(uchar *data, uchar len) {
+	uchar byteCnt = 0;
+	uchar byteMsk = 0x01;
+	uchar bitMsk = 0x01;
+	
+	if(len == 4) {
+		if(data[0] == 0x09) {								/* check cable number, code index number */		
+			if((data[1] & 0xf0) == 0x90) {					/* check note on */
+				if((data[1] & 0x0f) == LED_CHANNEL) {		/* check channel */
+					if(data[2] <= LED-1) {
+						while(data[2] >= 8) {
+							data[2] -= 8;
+							byteCnt++;
+							byteMsk <<= 1;					/* SPI latch bit */
+						}
+						while(data[2]--) {
+							bitMsk <<= 1;					/* LED bit, set or clear */
+						}
+						if(data[3] > 0x00 && data[3] <= 0x7f) {
+							spiDataOut[byteCnt] |= bitMsk;	/* set bit */
+						} else {
+							spiDataOut[byteCnt] &= ~bitMsk;/* clear bit */
+						}
+						spiWriteRead(spiDataOut[byteCnt]);
+						byteCnt = PORTC;					/* save PORTC status */
+						PORTC = byteMsk;					/* write bit to latch */
+						PORTB |= (1<<BUS_LATCH);
+						PORTC = 0x00;
+						PORTB &= ~(1<<BUS_LATCH);
+						PORTC = byteCnt;					/* recover PORTC status */
+					}
+				}
+			}
+		}
 	}
 	return;
 }

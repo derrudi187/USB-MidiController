@@ -14,7 +14,7 @@
 #define INC_ENC 16
 /* #define INC_MAX 127	        // Maximum value, range 1-127, if not defined, default: 127 */
 /* #define INC_STEP 1	        // Step per pulse, range 1-10, if not defined, default: 1 */
-#define INC_MIDI_CHANNEL 1   // Channel number , range 0-15 (channel 1-16), if not defined, default: 0
+/* #define INC_MIDI_CHANNEL 1   // Channel number , range 0-15 (channel 1-16), if not defined, default: 0 */
 /* control change number for each encoder, range 0-119, 120-127 are reserved as channel mode message */
 #define INC_ENC1	0
 #define INC_ENC2	1
@@ -36,7 +36,7 @@
  * Number of Keys in range of 1-32
  * If not defined or set to zero, key are disable */
 #define KEY 32
-#define KEY_MIDI_CHANNEL 1   // Channel number, range 0-15 (channel 1-16), if not define, defualt: 0
+/* #define KEY_MIDI_CHANNEL 1   // Channel number, range 0-15 (channel 1-16), if not define, defualt: 0 */
 /* Note number for each key, range 0-127 */
 #define KEY1	0
 #define KEY2	1
@@ -106,6 +106,12 @@
  * SPI config
  */
 #define SPI_ENABLE
+#define SPI_DATA 8
+/*
+ * LED config
+ */
+#define LED 16
+#define LED_CHANNEL 0
 /* misc */
 #ifdef INC_ENC
 	#if ENC_INC > 16

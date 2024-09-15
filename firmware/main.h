@@ -34,4 +34,6 @@ void key(uchar *key, uchar *prevKey);
 void adcInit(short *prevAdcData);
 uchar adcConvert(short *prevAdcData, uchar channel);
 void usbSendMessage(uchar *message, uchar len);
+uchar spiWriteRead(uchar data);
+void writeLEDs(uchar *data, uchar len);
 #endif /* __main_h_included__ */

@@ -1,0 +1,45 @@
+<device name="USB-MIDICONTROLLER" author="DerRudi" description="USB-MIDICONTROLLER" version="850" type="MIDI" vid="0x16c0" pid="0x05e4" decks="4"><audio/>
+<encoder cc="0x00" zero="0x00" name="ENC1" channel="0" />
+<encoder cc="0x01" zero="0x00" name="ENC2" channel="0" />
+<encoder cc="0x02" zero="0x00" name="ENC3" channel="0" />
+<encoder cc="0x03" zero="0x00" name="ENC4" channel="0" />
+<encoder cc="0x04" zero="0x00" name="ENC5" channel="0" />
+<encoder cc="0x05" zero="0x00" name="ENC6" channel="0" />
+<encoder cc="0x06" zero="0x00" name="ENC7" channel="0" />
+<encoder cc="0x07" zero="0x00" name="ENC8" channel="0" />
+<encoder cc="0x08" zero="0x00" name="ENC9" channel="0" />
+<encoder cc="0x09" zero="0x00" name="ENC10" channel="0" />
+<encoder cc="0x0A" zero="0x00" name="ENC11" channel="0" />
+<encoder cc="0x0B" zero="0x00" name="ENC12" channel="0" />
+<encoder cc="0x0C" zero="0x00" name="ENC13" channel="0" />
+<encoder cc="0x0D" zero="0x00" name="ENC14" channel="0" />
+<encoder cc="0x0E" zero="0x00" name="ENC15" channel="0" />
+<encoder cc="0x0F" zero="0x00" name="ENC16" channel="0" />
+<button note="0x00" name="BUTTON1" channel="0" />
+<button note="0x01" name="BUTTON2" channel="0" />
+<button note="0x02" name="BUTTON3" channel="0" />
+<button note="0x03" name="BUTTON4" channel="0" />
+<button note="0x04" name="BUTTON5" channel="0" />
+<button note="0x05" name="BUTTON6" channel="0" />
+<button note="0x05" name="BUTTON7" channel="0" />
+<button note="0x05" name="BUTTON8" channel="0" />
+<slider cc="0x10" name="SLIDER1" channel="0" />
+<slider cc="0x11" name="SILDER2" channel="0" />
+<slider cc="0x12" name="SLIDER3" channel="0" />
+<led note="0x00" name="LED1" channel="0" />
+<led note="0x01" name="LED2" channel="0" />
+<led note="0x02" name="LED3" channel="0" />
+<led note="0x03" name="LED4" channel="0" />
+<led note="0x04" name="LED5" channel="0" />
+<led note="0x05" name="LED6" channel="0" />
+<led note="0x06" name="LED7" channel="0" />
+<led note="0x07" name="LED8" channel="0" />
+<led note="0x08" name="LED9" channel="0" />
+<led note="0x09" name="LED10" channel="0" />
+<led note="0x0A" name="LED11" channel="0" />
+<led note="0x0B" name="LED12" channel="0" />
+<led note="0x0C" name="LED13" channel="0" />
+<led note="0x0D" name="LED14" channel="0" />
+<led note="0x0E" name="LED15" channel="0" />
+<led note="0x0F" name="LED16" channel="0" />
+</device>
