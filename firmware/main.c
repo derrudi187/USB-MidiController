@@ -445,13 +445,18 @@ void incremental_encoder_8bit(uchar *phase, uchar *prevPhase, char *result, ucha
 			value = incTab[index];							/* read value from Increment-Table */
 			if(value != 0x00) {
 				if(value == 0x01) {
-					result[encNum] += INC_STEP;
+					/*result[encNum] += INC_STEP;
 					if(result[encNum] < 0)
 						result[encNum] = INC_MAX;
+					*/
+					result[encNum] = 0x01;
 				} else {
+					/*
 					result[encNum] -= INC_STEP;
 					if(result[encNum] < 0)
 						result[encNum] = 0;
+					*/
+					result[encNum] =0x7f;
 				}
 				midiMsg[msgLen++] = 0x0b;
 				midiMsg[msgLen++] = 0xb0 | INC_MIDI_CHANNEL;

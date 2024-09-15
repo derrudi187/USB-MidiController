@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapper device="USB-MIDICONTROLLER" version="850" date="2024-09-15">
+	<map value="SLIDER1" action="deck 1 eq_low" />
+	<map value="SILDER2" action="eq_high" />
+	<map value="LED2" action="var $value ? off:on" />
+	<map value="BUTTON3" action="set $value 0 while_pressed" />
+	<map value="BUTTON4" action="toggle $value" />
+	<map value="ONINIT" action="toggle $value" />
+</mapper>
