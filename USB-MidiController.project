@@ -6,6 +6,7 @@
       <File Name="source/vusb-20121206.tar.gz"/>
     </VirtualDirectory>
     <VirtualDirectory Name="firmware">
+      <File Name="firmware/config_new.h"/>
       <File Name="firmware/usbconfig.h"/>
       <File Name="firmware/Makefile"/>
       <File Name="firmware/main.h"/>
