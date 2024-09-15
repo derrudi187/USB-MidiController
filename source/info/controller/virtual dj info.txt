@@ -1,8 +1,0 @@
-Virtual DJ sendet bei config:
-<led note="0x02" name="LED_PLAY" default="PLAY" deck="1" channel="1" />
-
-LED-On:
-0x09, 0x91, 0x02, 0x7f	-> (cable number, note on), (note on, channel), (note number), (data)
-
-LED-Off:
-0x09, 0x91, 0x02, 0x00
