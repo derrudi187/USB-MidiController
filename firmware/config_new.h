@@ -18,8 +18,8 @@
  * WARNING: if this channel same with ADC_MIDI_CHANNEL, the control change number(cc) can do overlap */
 //#define INC_ENC_MIDI_CHANNEL 0
 /* Incremental encoder mode
- * If INC_ENC_MODE set to 0: send 127, while counterclockwise or 1 clockwise
- * If INC_ENC_MODE set to 1: send value + INC_ENC_STEP while clockwise or value - INC_ENC_STEP counterclockwise 
+ * If INC_ENC_MODE set to 0: sends 1 while rotate clockwise otherwise 127 counterclockwise
+ * If INC_ENC_MODE set to 1: sends value + INC_INC_STEP while rotate clockwise otherwise value - INC_ENC_STEP counterclockwise(value starts with zero)
  * If not defined, default is mode 0 */
 //#define INC_ENC_MODE 0
 /* Incremental encoder maximum value, range 1-127
