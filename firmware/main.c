@@ -166,8 +166,13 @@ static PROGMEM const char usbDescriptorConfigurationMidi[] = {
 	0x03													// BaAssocJackID(1)
 };
 /*
- * Global SPI data
+ * Global values
  */
+#ifdef INC_ENC_NUMBER
+#if INC_ENC_MODE == 1
+char incEncResult[INC_ENC_NUMBER];
+#endif
+#endif
 #ifdef SPI_ENABLE
 uchar spiDataOut[SPI_DATA];
 #endif
@@ -235,20 +240,19 @@ int main(void) {
     
     hardwareInit();
     matrixRead(matrixData);
-#ifdef INC_ENC
-    uchar prevInc[4];
-    char incValue[INC_ENC];
-    for(i = 0; i <= 3; i++)
-        prevInc[i] = matrixData[i];
+#ifdef INC_ENC_NUMBER
+    uchar prevIncEnc[INC_ENC_STORAGE];		/* Incremental encoder init. */
+    for(i = 0; i <= INC_ENC_STORAGE-1; i++)
+        prevIncEnc[i] = matrixData[i];		/* set current phases */
+#if INC_ENC_MODE == 1
+    for(i = 0; i <= INC_ENC_NUMBER-1; i++)	/* set values to zero */
+		incEncResult[i] = 0x00;
+#endif
 #endif
 #ifdef KEY
     uchar prevKey[4];
     for(i = 0; i <= 3; i++)
         prevKey[i] = matrixData[i+4];
-#endif
-#ifdef INC_ENC
-    for(i = 0; i <= INC_ENC-1; i++)
-        incValue[i] = 0x00;
 #endif
 #ifdef ADC_CHANNEL
     short prevAdcData[ADC_CHANNEL];
@@ -260,7 +264,7 @@ int main(void) {
 		spiDataOut[i] = 0x00;
 #endif
 
-    usbSetup();             /* USB setup */
+    usbSetup();             /* USB stack init. */
     wdt_enable(WDTO_1S);    /* Watchdog enable(1s) */
     sei();                  /* global interrut enable */
 	
@@ -268,8 +272,8 @@ int main(void) {
         wdt_reset();
         usbPoll();
         matrixRead(matrixData);
-#ifdef INC_ENC
-        incremental_encoder(matrixData, prevInc, incValue); 
+#ifdef INC_ENC_NUMBER
+        incremental_encoder(matrixData, prevIncEnc); 
 #endif
 #ifdef KEY
         key(matrixData+4, prevKey);
@@ -300,8 +304,10 @@ void hardwareInit(void) {
 	SPSR = (uchar) (1<<SPI2X);
 #endif
 /* #################################### */
+#ifdef INC_ENC_NUMBER
 	PORTC = 0x00;
 	DDRC = 0xff;
+#endif
 /* #################################### */	
 #ifdef DEBUG_LEVEL
 	#if DEBUG_LEVEL > 0
@@ -346,12 +352,32 @@ void usbSetup(void) {
 	usbInit();
 	return;
 }
-
-
-
-#ifdef INC_ENC
-/* incremental encoder table */
-const uchar incTab[] = {
+/* 
+ * Incremental encoder function
+ */
+#ifdef INC_ENC_NUMBER
+/* incremental encoder input table */
+#if INC_ENC_MODE == 0
+const uchar incEncInputTab[] = {
+	0,		// 0000
+	0,		// 0001
+	1,		// 0010
+	0,		// 0011
+	0,		// 0100
+	0,		// 0101
+	0,		// 0110
+	127,	// 0111
+	127,	// 1000
+	0,		// 1001
+	0,		// 1010
+	0,		// 1011
+	0,		// 1100
+	1,		// 1101
+	0,		// 1110
+	0		// 1111
+};
+#else
+const uchar incEncInputTab[] = {
 	0,		// 0000
 	0,		// 0001
 	1,		// 0010
@@ -369,7 +395,8 @@ const uchar incTab[] = {
 	0,		// 1110
 	0		// 1111
 };
-/* midi message incremental table */
+#endif
+/* incremental encoder midi message table */
 const uchar midiIncTab[] = {
 	INC_ENC1, INC_ENC2, INC_ENC3, INC_ENC4, INC_ENC5, INC_ENC6, INC_ENC7, INC_ENC8, INC_ENC9, INC_ENC10, INC_ENC11, INC_ENC12, INC_ENC13, INC_ENC14, INC_ENC15, INC_ENC16
 };
@@ -377,13 +404,11 @@ const uchar midiIncTab[] = {
  * 8 incremental encoder per 2 byte
  * *phase: 		array-pointer on new value, min. 2 byte, 1. byte aPhase, 2. byte bPhase
  * *prevPhase:	array-pointer on old value, min. 2 byte, 1. byte aPhase, 2. byte bPhase
- * *result:		array-pointer on result
- * coe:			count of encoder, min. 1 encoder(first 2 bit of byte 1. & 2.)
  */
-void incremental_encoder(uchar *phase, uchar *prevPhase, char *result) {
+void incremental_encoder(uchar *phase, uchar *prevPhase) {
     uchar tabIndex;                     /* midi table index for more as 8 encoder */
     uchar bitMsk;                       /* for delete overflow-bits */
-    uchar coe = INC_ENC;                /* for calculate overflow-bits, number of byte to check in loop */
+    uchar coe = INC_ENC_NUMBER;			/* for calculate overflow-bits, number of byte to check in loop */
     uchar byteCnt = 0;                  /* count byte for phase-pointer */
     
     while(coe > 8) {                    /* find byte with overflow bits */
@@ -400,11 +425,11 @@ void incremental_encoder(uchar *phase, uchar *prevPhase, char *result) {
         phase[byteCnt] &= bitMsk;       /* delete overflow-bits */
         phase[byteCnt+1] &= bitMsk;
     }
-    coe = INC_ENC;
+    coe = INC_ENC_NUMBER;
     tabIndex = 0;
     byteCnt = 0;
     while(coe) {
-        incremental_encoder_8bit(phase+byteCnt, prevPhase+byteCnt, result, tabIndex);
+        incremental_encoder_8bit(phase+byteCnt, prevPhase+byteCnt, tabIndex);
         if(coe > 8) {
             coe -= 8;
             tabIndex += 8;
@@ -419,10 +444,9 @@ void incremental_encoder(uchar *phase, uchar *prevPhase, char *result) {
  * 8 incremental encoder per 2 byte
  * *phase: 		array-pointer on new value, 2 byte, 1. byte aPhase, 2. byte bPhase
  * *prevPhase:	array-pointer on old value, 2 byte, 1. byte aPhase, 2. byte bPhase
- * *result:		array-pointer on result
  * tabIndex:	set to zero when incTab has only 16 or less values
  */
-void incremental_encoder_8bit(uchar *phase, uchar *prevPhase, char *result, uchar tabIndex) {
+void incremental_encoder_8bit(uchar *phase, uchar *prevPhase, uchar tabIndex) {
 	uchar bitMsk = 0x01;
 	uchar index;
 	uchar value;
@@ -442,26 +466,27 @@ void incremental_encoder_8bit(uchar *phase, uchar *prevPhase, char *result, ucha
 				index |= 0x04;
 			if(prevPhase[1] & bitMsk)
 				index |= 0x08;
-			value = incTab[index];							/* read value from Increment-Table */
+			value = incEncInputTab[index];							/* read value from Increment-Table */
 			if(value != 0x00) {
+#if INC_ENC_MODE > 0
 				if(value == 0x01) {
-					/*result[encNum] += INC_STEP;
-					if(result[encNum] < 0)
-						result[encNum] = INC_MAX;
-					*/
-					result[encNum] = 0x01;
+					incEncResult[encNum] += INC_ENC_STEP;
+					if(incEncResult[encNum] > INC_ENC_MAX || incEncResult[encNum] < 0)
+						incEncResult[encNum] = INC_ENC_MAX;
 				} else {
-					/*
-					result[encNum] -= INC_STEP;
-					if(result[encNum] < 0)
-						result[encNum] = 0;
-					*/
-					result[encNum] =0x7f;
+					incEncResult[encNum] -= INC_ENC_STEP;
+					if(incEncResult[encNum] < 0)
+						incEncResult[encNum] = 0;
 				}
+#endif
 				midiMsg[msgLen++] = 0x0b;
-				midiMsg[msgLen++] = 0xb0 | INC_MIDI_CHANNEL;
+				midiMsg[msgLen++] = 0xb0 | INC_ENC_MIDI_CHANNEL;
 				midiMsg[msgLen++] = midiIncTab[encNum+tabIndex];
-				midiMsg[msgLen++] = result[encNum];
+#if INC_ENC_MODE > 0
+				midiMsg[msgLen++] = incEncResult[encNum];
+#else
+				midiMsg[msgLen++] = value;
+#endif
 				if(msgLen == 8) {
 					usbSendMessage(midiMsg, msgLen);		/* send message */
 					msgLen = 0;
@@ -479,7 +504,7 @@ void incremental_encoder_8bit(uchar *phase, uchar *prevPhase, char *result, ucha
 		usbSendMessage(midiMsg, msgLen);					/* send message */
 	return;
 }
-#endif /* INC_ENC */
+#endif /* INC_ENC_NUMBER */
 /* 8 Keys per byte
  * *key:		array-pointer on new value
  * *prevKey:	array-pointer on old value

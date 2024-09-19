@@ -28,8 +28,8 @@
 void hardwareInit(void);
 void matrixRead(uchar *data);
 void usbSetup(void);
-void incremental_encoder(uchar *phase, uchar *prevPhase, char *result);
-void incremental_encoder_8bit(uchar *phase, uchar *prevPhase, char *result, uchar tabIndex);
+void incremental_encoder(uchar *phase, uchar *prevPhase);
+void incremental_encoder_8bit(uchar *phase, uchar *prevPhase, uchar tabIndex);
 void key(uchar *key, uchar *prevKey);
 void adcInit(short *prevAdcData);
 uchar adcConvert(short *prevAdcData, uchar channel);

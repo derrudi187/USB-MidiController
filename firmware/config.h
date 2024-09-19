@@ -8,14 +8,28 @@
  */
 #ifndef __config_h_included__
 #define __config_h_included__
-/* Incemental encoder config
- * Number of incremental encoders in range of 1-16
- * If INC_ENC not defined or set to zero, incremental encoders are disabled */
-#define INC_ENC 16
-/* #define INC_MAX 127	        // Maximum value, range 1-127, if not defined, default: 127 */
-/* #define INC_STEP 1	        // Step per pulse, range 1-10, if not defined, default: 1 */
-/* #define INC_MIDI_CHANNEL 1   // Channel number , range 0-15 (channel 1-16), if not defined, default: 0 */
-/* control change number for each encoder, range 0-119, 120-127 are reserved as channel mode message */
+/* Incremental encoder config
+ *
+ * Number of connected incremental encoders, range of 1-16
+ * If NUMBER_INC_EC not defined or set to zero, incremental encoders are disable */
+#define INC_ENC_NUMBER 16
+/* Channel number for send message, range 0-15(channel 1-16)
+ * If not defined, default is midi-channel 1
+ * WARNING: if this channel same with ADC_MIDI_CHANNEL, the control change number(cc) can do overlap */
+//#define INC_ENC_MIDI_CHANNEL 1
+/* Incremental encoder mode
+ * If INC_ENC_MODE set to 0: sends 1 while rotate clockwise otherwise 127 counterclockwise
+ * If INC_ENC_MODE set to 1: sends value + INC_INC_STEP while rotate clockwise otherwise value - INC_ENC_STEP counterclockwise(value starts with zero)
+ * If not defined, default is mode 0 */
+//#define INC_ENC_MODE 1
+/* Incremental encoder maximum value, range 1-127
+ * If not defined, default is 127 */
+//#define INC_ENC_MAX 63
+/* Incremental encoder step per pulse, range 1-10
+ * If not defined, default is 1 */
+//#define INC_ENC_STEP 2
+/* Control change number(cc) for each encoder, range 0-119
+ * 120-127 are reserved as channel mode message */
 #define INC_ENC1	0
 #define INC_ENC2	1
 #define INC_ENC3	2
@@ -32,44 +46,6 @@
 #define INC_ENC14	13
 #define INC_ENC15	14
 #define INC_ENC16	15
-/* Key config
- * Number of Keys in range of 1-32
- * If not defined or set to zero, key are disable */
-#define KEY 32
-/* #define KEY_MIDI_CHANNEL 1   // Channel number, range 0-15 (channel 1-16), if not define, defualt: 0 */
-/* Note number for each key, range 0-127 */
-#define KEY1	0
-#define KEY2	1
-#define KEY3	2
-#define KEY4	3
-#define KEY5	4
-#define KEY6	5
-#define KEY7	6
-#define KEY8	7
-#define KEY9	8
-#define KEY10	9
-#define KEY11	10
-#define KEY12	11
-#define KEY13	12
-#define KEY14	13
-#define KEY15	14
-#define KEY16	15
-#define KEY17	16
-#define KEY18	17
-#define KEY19	18
-#define KEY20	19
-#define KEY21	20
-#define KEY22	21
-#define KEY23	22
-#define KEY24	23
-#define KEY25	24
-#define KEY26	25
-#define KEY27	26
-#define KEY28	27
-#define KEY29	28
-#define KEY30	29
-#define KEY31	30
-#define KEY32	31
 /* Analog config
  * Number of analog channel in range of 1-34
  * If not defined or set to zero, analog section are disabled
@@ -112,44 +88,58 @@
  */
 #define LED 16
 #define LED_CHANNEL 0
-/* misc */
-#ifdef INC_ENC
-	#if ENC_INC > 16
-		#error "INC_ENC out of range, config.h"
+/* Misc for incremental encoder */
+#ifdef INC_ENC_NUMBER
+	#if INC_ENC_NUMBER > 16
+		#error "INC_ENC_NUMBER out of range, config.h"
 	#else
-		#if INC_ENC < 1
-			#undef INC_ENC
+		#if INC_ENC_NUMBER < 1
+			#undef INC_ENC_NUMBER
 		#else
-            #ifndef INC_MIDI_CHANNEL
-                #define INC_MIDI_CHANNEL 0
-            #else
-                #if INC_MIDI_CHANNEL < 0
-                #if INC_MIDI_CHANNEL > 15
-                    #error "INC_MIDI_CHANNEL out of range, config.h"
-                #endif
-                #endif
-            #endif
-			#ifndef INC_MAX
-				#define INC_MAX 127
-			#else 
-                #if INC_MAX < 1
-				#if INC_MAX > 127
-					#error "INC_MAX out of range, config.h"
-				#endif
-                #endif
+			#if INC_ENC_NUMBER < 5
+				#define INC_ENC_STORAGE 1
 			#endif
-			#ifndef INC_STEP
-				#define INC_STEP 1
+			#if INC_ENC_NUMBER < 9
+				#define INC_ENC_STORAGE 2
+			#endif
+			#if INC_ENC_NUMBER < 13
+				#define INC_ENC_STORAGE 3
+			#endif
+			#ifndef INC_ENC_STORAGE
+				#define INC_ENC_STORAGE 4
+			#endif
+			#ifndef INC_ENC_MIDI_CHANNEL
+				#define INC_ENC_MIDI_CHANNEL 0
 			#else
-                #if INC_STEP < 1
-				#if INC_STEP > 10
-					#error "INC_STEP out of range, config.h"
-                #endif
+				#if INC_ENC_MIDI_CHANNEL < 0 || INC_ENC_MIDI_CHANNEL > 15
+					#error "INC_ENC_MIDI_CHANNEL out of range, config.h"
+				#endif
+			#endif
+			#ifndef INC_ENC_MODE
+				#define INC_ENC_MODE 0
+			#else
+				#if INC_ENC_MODE < 0 || INC_ENC_MODE > 1
+					#error "INC_ENC_MODE out of range, config.h"
+				#endif
+			#endif
+			#ifndef INC_ENC_MAX
+				#define INC_ENC_MAX 127
+			#else
+				#if INC_ENC_MAX < 1 || INC_ENC_MAX > 127
+					#error "INC_ENC_MAX out of range, config.h"
+				#endif
+			#endif
+			#ifndef INC_ENC_STEP
+				#define INC_ENC_STEP 1
+			#else
+				#if INC_ENC_STEP < 1 || INC_ENC_STEP > 10
+					#error "INC_ENC_STEP out of range, config.h"
 				#endif
 			#endif
 		#endif
 	#endif
 #endif
+/* misc */
 #ifdef KEY
 	#if KEY > 32
 		#error "KEY out of range, config.h"
@@ -160,10 +150,8 @@
             #ifndef KEY_MIDI_CHANNEL
                 #define KEY_MIDI_CHANNEL 0
             #else
-                #if KEY_MIDI_CHANNEL < 0
-                #if KEY_MIDI_CHANNEL > 15
+                #if KEY_MIDI_CHANNEL < 0 || KEY_MIDI_CHANNEL > 15
                     #error "KEY_MIDI_CHANNEL out of range, config.h"
-                #endif
                 #endif
             #endif
 		#endif
@@ -179,10 +167,8 @@
             #ifndef ADC_MIDI_CHANNEL
                 #define ADC_MIDI_CHANNEL 0
             #else
-                #if ADC_MIDI_CHANNEL < 0
-                #if ADC_MIDI_CHANNEL > 15
+                #if ADC_MIDI_CHANNEL < 0 || ADC_MIDI_CHANNEL > 15
                     #error "ADC_MIDI_CHANNEL out of range, config.h"
-                #endif
                 #endif
             #endif
 			#if ADC_CHANNEL <= 8
