@@ -54,6 +54,18 @@
 		#if INC_ENC_NUMBER < 1
 			#undef INC_ENC_NUMBER
 		#else
+			#if INC_ENC_NUMBER < 5
+				#define INC_ENC_STORAGE 1
+			#endif
+			#if INC_ENC_NUMBER < 9
+				#define INC_ENC_STORAGE 2
+			#endif
+			#if INC_ENC_NUMBER < 13
+				#define INC_ENC_STORAGE 3
+			#endif
+			#ifndef INC_ENC_STORAGE
+				#define INC_ENC_STORAGE 4
+			#endif
 			#ifndef INC_ENC_MIDI_CHANNEL
 				#define INC_ENC_MIDI_CHANNEL 0
 			#else

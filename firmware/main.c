@@ -391,7 +391,7 @@ void incremental_encoder(uchar *phase, uchar *prevPhase, char *result) {
         if(coe > 0)
             byteCnt++;
     }
-    if((coe < 8)&& coe) {                /* generate bit mask for valid bits */
+    if((coe < 8)&& coe) {				/* generate bit mask for valid bits */
         bitMsk = 0x00;
         while(coe--) {
             bitMsk <<= 1;
