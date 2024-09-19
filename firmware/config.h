@@ -46,6 +46,47 @@
 #define INC_ENC14	13
 #define INC_ENC15	14
 #define INC_ENC16	15
+/* Key config
+ * 
+ * Number of connected keys, range 1-32
+ * If KEY_NUMBER not defined or set to zero, keys are disable */
+#define KEY_NUMBER 32
+/* Channel number for send message, range 0-15(channel 1-16)
+ * If not defined, default is midi-channel 1 */
+//#define KEY_MIDI_CHANNEL 1
+/* Note number for each key, range 0-127 */
+#define KEY1 0
+#define KEY2 1
+#define KEY3 2
+#define KEY4 3
+#define KEY5 4
+#define KEY6 5
+#define KEY7 6
+#define KEY8 7
+#define KEY9 8
+#define KEY10 9
+#define KEY11 10
+#define KEY12 11
+#define KEY13 12
+#define KEY14 13
+#define KEY15 14
+#define KEY16 15
+#define KEY17 16
+#define KEY18 17
+#define KEY19 18
+#define KEY20 19
+#define KEY21 20
+#define KEY22 21
+#define KEY23 22
+#define KEY24 23
+#define KEY25 24
+#define KEY26 25
+#define KEY27 26
+#define KEY28 27
+#define KEY29 28
+#define KEY30 29
+#define KEY31 30
+#define KEY32 31
 /* Analog config
  * Number of analog channel in range of 1-34
  * If not defined or set to zero, analog section are disabled
@@ -60,8 +101,12 @@
  * Use: PA0,1 for multiplexer and PA2,3 for analog signal
  */
 #define ADC_CHANNEL 2
-/* #define ADC_MIDI_CHANNEL 1   // Channel number, range 0-15 (channel 1-16), if not define, defualt: 0 */
-/* control change number for each analog channel, possible value 0-119, 120-127 are reserved as channel mode message */
+/* Channel number for send message, range 0-15(channel 1-16)
+ * If not defined, default is midi-channel 1
+ * WARNING: if this channel same with INC_ENC_CHANNEL, the control change number(cc) can do overlap */
+//#define ADC_MIDI_CHANNEL 1
+/* Control change number(cc) for analog channel, range 0-119
+ * 120-127 are reserved as channel mode message */
 #define ADC1	16
 #define ADC2	17
 #define ADC3	18
@@ -139,14 +184,26 @@
 		#endif
 	#endif
 #endif
-/* misc */
-#ifdef KEY
-	#if KEY > 32
+/* Misc for Keys */
+#ifdef KEY_NUMBER
+	#if KEY_NUMBER > 32
 		#error "KEY out of range, config.h"
 	#else
-		#if KEY < 1
-			#undef KEY
+		#if KEY_NUMBER < 1
+			#undef KEY_NUMBER
         #else
+			#if KEY_NUMBER < 9
+				#define KEY_STORAGE 1
+			#endif
+			#if KEY_NUMBER < 17
+				#define KEY_STORAGE 2
+			#endif
+			#if KEY_NUMBER < 25
+				#define KEY_STORAGE 3
+			#endif
+			#ifndef KEY_STORAGE
+				#define KEY_STORAGE 4
+			#endif
             #ifndef KEY_MIDI_CHANNEL
                 #define KEY_MIDI_CHANNEL 0
             #else
@@ -157,6 +214,7 @@
 		#endif
 	#endif
 #endif
+/* Misc for Analog */
 #ifdef ADC_CHANNEL
 	#if ADC_CHANNEL > 34
 		#error "ADC_CHANNEL out of range, config.h"

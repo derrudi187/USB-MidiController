@@ -249,9 +249,9 @@ int main(void) {
 		incEncResult[i] = 0x00;
 #endif
 #endif
-#ifdef KEY
-    uchar prevKey[4];
-    for(i = 0; i <= 3; i++)
+#ifdef KEY_NUMBER
+    uchar prevKey[KEY_STORAGE];
+    for(i = 0; i <= KEY_STORAGE-1; i++)
         prevKey[i] = matrixData[i+4];
 #endif
 #ifdef ADC_CHANNEL
@@ -275,7 +275,7 @@ int main(void) {
 #ifdef INC_ENC_NUMBER
         incremental_encoder(matrixData, prevIncEnc); 
 #endif
-#ifdef KEY
+#ifdef KEY_NUMBER
         key(matrixData+4, prevKey);
 #endif
 #ifdef ADC_CHANNEL
@@ -299,16 +299,12 @@ void hardwareInit(void) {
 #endif
 #ifdef SPI_ENABLE
 	PORTB = (uchar) (1<<SPI_MISO);
-    DDRB =	(uchar) (1<<SPI_SCK)|(1<<SPI_MOSI)|(1<<BUS_LATCH);
+    DDRB = (uchar) (1<<SPI_SCK)|(1<<SPI_MOSI)|(1<<BUS_LATCH);
 	SPCR = (uchar) (1<<SPE)|(1<<MSTR);										/* SPI init. */
 	SPSR = (uchar) (1<<SPI2X);
 #endif
-/* #################################### */
-#ifdef INC_ENC_NUMBER
 	PORTC = 0x00;
 	DDRC = 0xff;
-#endif
-/* #################################### */	
 #ifdef DEBUG_LEVEL
 	#if DEBUG_LEVEL > 0
 		PORTD = 0x00;
@@ -508,14 +504,13 @@ void incremental_encoder_8bit(uchar *phase, uchar *prevPhase, uchar tabIndex) {
 /* 8 Keys per byte
  * *key:		array-pointer on new value
  * *prevKey:	array-pointer on old value
- * nok:			count of keys, min. 1 key
  */
-#ifdef KEY
+#ifdef KEY_NUMBER
 const uchar midiKeyTab[] = {
 KEY1, KEY2, KEY3, KEY4, KEY5, KEY6, KEY7, KEY8, KEY9, KEY10, KEY11, KEY12, KEY13, KEY14, KEY15, KEY16, KEY17, KEY18, KEY19, KEY20, KEY21, KEY22, KEY23, KEY24, KEY25, KEY26, KEY27, KEY28, KEY29, KEY30, KEY31, KEY32
 };
 void key(uchar *key, uchar *prevKey) {
-	uchar byteCnt = KEY;				/* for calculate number of byte to check, for-loop count */
+	uchar byteCnt = KEY_NUMBER;			/* for calculate number of byte to check, for-loop count */
 	uchar nok = 0;						/* number of byte to check in for-loop */
 	uchar bitMsk;						/* for delete overflow-bits, key check */
 	
@@ -574,7 +569,7 @@ void key(uchar *key, uchar *prevKey) {
 	usbSendMessage(midiMsg, msgLen);
 	return;
 }
-#endif /* KEY */
+#endif /* KEY_NUMBER */
 /* ADC Init.
  * *prevAdcData array-pointer for convert value
  */
